@@ -1,8 +1,10 @@
 # SAFra – life-cycle carbon calculator for Alcohol-to-Jet SAF
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23819362.svg)](https://doi.org/10.5281/zenodo.23819362) [![Live tool](https://img.shields.io/badge/live%20tool-biochainplatform.github.io%2Fsafra-1f6b45)](https://biochainplatform.github.io/safra/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 **SAFra** (*SAF* + *safra*, Portuguese for "harvest") is a free, browser-based tool that estimates the well-to-wake carbon intensity (CI) of Alcohol-to-Jet (ATJ) sustainable aviation fuel produced from Brazilian sugarcane and corn ethanol, and compares it with US corn pathways, CORSIA default values and published ATJ life cycle assessments.
 
-**Live tool:** `https://biochainplatform.github.io/safra/` *(update after enabling GitHub Pages)*
+**Live tool:** https://biochainplatform.github.io/safra/
 
 ![SAFra main screen](docs/img/screenshot-main.png)
 
@@ -83,7 +85,7 @@ Contact: Prof. Adriano Viana Ensinas – adriano.ensinas@ufla.br
 
 ## How to cite
 
-> Ensinas, A. V. et al. (2026). *SAFra: life-cycle carbon calculator for Alcohol-to-Jet SAF from Brazilian ethanol* (v0.1.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX
+> Ensinas, A. V. et al. (2026). *SAFra: life-cycle carbon calculator for Alcohol-to-Jet SAF from Brazilian ethanol* (v0.1.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.23819362
 
 ---
 
