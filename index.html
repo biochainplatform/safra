@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="SAFra – life-cycle carbon calculator for Alcohol-to-Jet SAF from Brazilian sugarcane and corn ethanol.">
+<title>SAFra Carbon Calculator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: field-notebook control column on the left, results instrument panel on the right; stacks on phones */
+:root{
+  --bg:#f4f6f2; --panel:#ffffff; --ink:#15241b; --muted:#5b6b60; --line:#d9e0d8; --soft:#eaf0e8;
+  --cane:#1f6b45; --corn:#c08a1e; --jet:#2f5f99; --h2:#b8392c; --plant:#d98c2b; --grey:#8b958d;
+  --good:#1f7a4a; --warn:#b07a12; --bad:#b03a2e; --accent:#1f6b45;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --a1:#0f4d2e; --a2:#2f7d4f; --a3:#5fae7a; --a4:#a6d8b0; --a5:#6b4f1d; --tr:#8c8c8c; --p1:#d98c2b; --p2:#f2c27b; --atj:#3d6fa8; --dist:#c9c9c9; --eth:#7d8f3a;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1712; --panel:#16221a; --ink:#e3ece5; --muted:#9db0a2; --line:#2a3a2f; --soft:#1c2b21;
+  --cane:#5fc48b; --corn:#e3b24c; --jet:#7fa8dc; --h2:#e3685a; --accent:#5fc48b; --good:#5fc48b; --warn:#e3b24c; --bad:#e3685a;
+  --a1:#2e8a57; --a2:#4fa673; --a3:#7cc595; --a4:#b8e3c1; --a5:#a07b3a; --tr:#9a9a9a; --dist:#6a6a6a; --eth:#a5b85a; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --panel:#16221a; --ink:#e3ece5; --muted:#9db0a2; --line:#2a3a2f; --soft:#1c2b21;
+  --cane:#5fc48b; --corn:#e3b24c; --jet:#7fa8dc; --h2:#e3685a; --accent:#5fc48b; --good:#5fc48b; --warn:#e3b24c; --bad:#e3685a;
+  --a1:#2e8a57; --a2:#4fa673; --a3:#7cc595; --a4:#b8e3c1; --a5:#a07b3a; --tr:#9a9a9a; --dist:#6a6a6a; --eth:#a5b85a; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.brand h1{font-family:var(--f-display);font-weight:700;font-size:2.3rem;letter-spacing:-.02em;margin:0;line-height:1}
+.brand h1 b{color:var(--cane)}
+.brand .tag{font-size:.92rem;color:var(--muted);max-width:44ch}
+.meta{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);text-align:right}
+.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.controls{display:flex;flex-direction:column;gap:14px;position:sticky;top:max(12px,env(safe-area-inset-top,0px))}
+@media (max-width:900px){.controls{position:static}}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl>label,.lbl{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+select,input[type=number]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 8px;width:100%}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px}
+.seg button{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:7px 6px;cursor:pointer;text-align:center;line-height:1.2}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.range{display:flex;align-items:center;gap:10px}
+.range input{flex:1;accent-color:var(--accent)}
+.range output{font-family:var(--f-mono);font-size:.8rem;min-width:7ch;text-align:right}
+.hint{font-size:.76rem;color:var(--muted)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-size:.84rem;font-weight:600;border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:6px;padding:8px 12px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+.results{display:flex;flex-direction:column;gap:18px;min-width:0}
+.kpis{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px}
+@media (max-width:640px){.kpis{grid-template-columns:1fr}}
+.kpi .big{font-family:var(--f-display);font-weight:700;font-size:3rem;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .unit{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.kpi .mid{font-family:var(--f-display);font-weight:700;font-size:2rem;line-height:1.05;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:.74rem;font-weight:600;border-radius:999px;padding:3px 9px;border:1px solid currentColor}
+.chip.ok{color:var(--good)} .chip.no{color:var(--bad)} .chip.mid{color:var(--warn)}
+h2{font-family:var(--f-display);font-weight:700;font-size:1.15rem;margin:0 0 4px;text-wrap:balance}
+.sub{color:var(--muted);font-size:.84rem;margin:0 0 12px}
+svg text{fill:var(--ink);font-family:var(--f-body)}
+svg .mut{fill:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.76rem;margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:2px;display:inline-block}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.82rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.two{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px}
+@media (max-width:1050px){.two{grid-template-columns:minmax(0,1fr)}}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pin{font-size:.76rem;border:1px dashed var(--line);border-radius:6px;padding:4px 8px;display:inline-flex;gap:6px;align-items:center}
+.pin button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:0 2px}
+.note{font-size:.76rem;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
+footer{font-size:.74rem;color:var(--muted);display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:12px}
+.flag{font-family:var(--f-mono);font-size:.7rem;background:var(--soft);border-radius:4px;padding:2px 6px}
+@media (prefers-reduced-motion:no-preference){.bar{transition:width .25s ease,x .25s ease}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1><b>SAF</b>ra</h1>
+      <div class="tag">Life-cycle carbon calculator for Alcohol-to-Jet SAF from Brazilian sugarcane and corn ethanol, benchmarked against CORSIA and US corn.</div>
+    </div>
+    <div class="meta">v0.1 beta · screening tool<br>DEG/UFLA · well-to-wake · FU 1 MJ SAF</div>
+  </header>
+
+  <div class="grid">
+    <aside class="panel controls" aria-label="Scenario inputs">
+      <div class="ctl"><span class="lbl">Ethanol feedstock</span>
+        <div class="seg" id="feed" role="group" aria-label="Feedstock">
+          <button data-v="cane" aria-pressed="true">Sugarcane<br><small>Brazil</small></button>
+          <button data-v="corn2">Corn 2nd crop<br><small>Brazil</small></button>
+          <button data-v="corn1">Corn 1st crop<br><small>Brazil</small></button>
+          <button data-v="us">Corn<br><small>United States</small></button>
+          <button data-v="custom">Custom<br><small>ethanol CI</small></button>
+        </div>
+      </div>
+      <div class="ctl" id="stateBox"><label for="state">State (agricultural inventory)</label>
+        <select id="state"></select>
+        <span class="hint" id="stateHint"></span>
+      </div>
+      <div class="ctl" id="customBox" hidden><label for="customCI">Ethanol carbon intensity (g CO₂eq/MJ, plant gate)</label>
+        <input type="number" id="customCI" value="30" min="0" max="120" step="0.5">
+      </div>
+      <div class="ctl" id="plantBox"><span class="lbl">Ethanol plant</span>
+        <div class="seg" id="plant" role="group" aria-label="Plant configuration">
+          <button data-v="A">Stand-alone<br><small>eucalyptus CHP</small></button>
+          <button data-v="B" aria-pressed="true">Integrated cane–corn<br><small>bagasse CHP</small></button>
+        </div>
+      </div>
+      <div class="ctl"><label for="h2">Hydrogen for hydrotreating</label>
+        <select id="h2">
+          <option value="pem">PEM electrolysis – grid</option>
+          <option value="pembag">PEM electrolysis – bagasse power</option>
+          <option value="pemwind">PEM electrolysis – wind</option>
+          <option value="etsr">Ethanol steam reforming</option>
+          <option value="smr">Natural gas SMR (fossil reference)</option>
+        </select>
+      </div>
+      <div class="ctl" id="gridBox"><label for="grid">Grid emission factor</label>
+        <div class="range"><input type="range" id="grid" min="0" max="500" step="1" value="79"><output id="gridO">79 g/kWh</output></div>
+        <span class="hint">Default: SE/CO subsystem, 2030–2049 average projected from ONS data and PDE 2034.</span>
+      </div>
+      <div class="ctl"><label for="h2d">H₂ demand</label>
+        <div class="range"><input type="range" id="h2d" min="0.2" max="0.8" step="0.05" value="0.5"><output id="h2dO">0.50 g/MJ</output></div>
+      </div>
+      <div class="ctl"><label for="kwh">Electrolyser consumption</label>
+        <div class="range"><input type="range" id="kwh" min="48" max="65" step="0.5" value="55"><output id="kwhO">55 kWh/kg</output></div>
+      </div>
+      <div class="ctl"><label for="luc">Land-use change accounting</label>
+        <select id="luc">
+          <option value="none">Excluded</option>
+          <option value="iluc">CORSIA ILUC values</option>
+          <option value="dluc">Direct LUC – BRLUC (Pereira et al. 2025)</option>
+          <option value="cons">Consequential (Moreira et al. 2020, 2nd-crop corn)</option>
+        </select>
+        <span class="hint" id="lucHint"></span>
+      </div>
+      <div class="btns">
+        <button class="btn primary" id="pinBtn">Pin scenario</button>
+        <button class="btn" id="copyBtn">Copy results</button>
+        <button class="btn" id="resetBtn">Reset</button>
+      </div>
+      <span class="hint" id="copyMsg" aria-live="polite"></span>
+    </aside>
+
+    <main class="results">
+      <section class="kpis">
+        <div class="panel kpi">
+          <div class="lbl">SAF carbon intensity</div>
+          <div><span class="big" id="ci">–</span> <span class="unit">g CO₂eq/MJ</span></div>
+          <div class="hint" id="ciDesc"></div>
+          <div class="chips" id="chips"></div>
+        </div>
+        <div class="panel kpi">
+          <div class="lbl">Saving vs fossil jet</div>
+          <div class="mid" id="savC">–</div><div class="unit">CORSIA baseline 89 g/MJ</div>
+          <div class="mid" id="savR" style="margin-top:8px">–</div><div class="unit">RED III comparator 94 g/MJ</div>
+        </div>
+        <div class="panel kpi">
+          <div class="lbl">Largest hotspot</div>
+          <div class="mid" id="hot" style="font-size:1.3rem">–</div>
+          <div class="unit" id="hotV"></div>
+          <div class="lbl" style="margin-top:10px">Agriculture share</div>
+          <div class="mid" id="agri">–</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Where the emissions come from</h2>
+        <p class="sub">Contribution of each supply-chain stage to the SAF carbon intensity (energy allocation).</p>
+        <svg id="stack" viewBox="0 0 800 70" width="100%" role="img" aria-label="Stacked bar of stage contributions"></svg>
+        <div class="legend" id="legend"></div>
+        <div class="tbl" style="margin-top:10px"><table id="stageTbl"><thead><tr><th>Stage</th><th class="n">g CO₂eq/MJ</th><th class="n">Share</th></tr></thead><tbody></tbody></table></div>
+      </section>
+
+        <section class="panel">
+          <h2>Brazilian ethanol against other pathways</h2>
+          <p class="sub">Your scenario and pinned scenarios against CORSIA default values and published ATJ assessments. Hatched part: land-use change.</p>
+          <div class="legend" style="margin:0 0 8px"><span><i style="background:var(--cane)"></i>Your scenario</span><span><i style="background:var(--corn)"></i>Pinned scenarios</span><span><i style="background:var(--grey)"></i>CORSIA default values</span><span><i style="background:var(--jet)"></i>Published ATJ LCAs</span></div>
+          <div class="pins" id="pins"></div>
+          <svg id="bench" viewBox="0 0 900 420" width="100%" role="img" aria-label="Benchmark chart"></svg>
+        </section>
+      <section class="two">
+        <div class="panel">
+          <h2>Hydrogen route break-even</h2>
+          <p class="sub">Carbon footprint of hydrogen per route as a function of the grid emission factor.</p>
+          <svg id="h2chart" viewBox="0 0 420 300" width="100%" role="img" aria-label="Hydrogen footprint versus grid factor"></svg>
+          <p class="note" id="h2note"></p>
+        </div>
+      <div class="panel">
+        <h2>State comparison</h2>
+        <p class="sub">SAF carbon intensity with the current plant, hydrogen and LUC settings, for every state with an inventory.</p>
+        <div class="tbl"><table id="stateTbl"><thead></thead><tbody></tbody></table></div>
+      </div>
+
+      </section>
+      <section class="panel">
+        <h2>Data and assumptions</h2>
+        <div class="tbl"><table>
+          <thead><tr><th>Item</th><th>Value</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>Agricultural stage by state and category (inputs, field N₂O, lime/urea CO₂, diesel, burning, dLUC)</td><td>Medians, kg CO₂eq/t</td><td>Pereira et al. 2025, Sustainability 17, 8482, Tables S17, S19, S20</td></tr>
+            <tr><td>Cane ethanol yield; surplus electricity</td><td>86 L/t; 1.2 kWh/kg EtOH</td><td>Silva et al. 2014, ES&amp;T</td></tr>
+            <tr><td>Cane mill chemicals</td><td>23.7 kg CO₂eq/m³</td><td>Macedo et al. 2008</td></tr>
+            <tr><td>Corn mill: ethanol / DDGS / oil; utilities share</td><td>430 L / 363 kg / 13 kg per t; eucalyptus CHP</td><td>Moreira et al. 2020, Nat. Sustain.</td></tr>
+            <tr><td>Corn haulage, stand-alone / multipurpose mill</td><td>50 / ~200 km</td><td>Moreira et al. 2020; Donke et al. 2017</td></tr>
+            <tr><td>Allocation</td><td>Energy (LHV); cane 86%, corn 56% to ethanol</td><td>RED III / CORSIA practice; Cavalett et al. 2013</td></tr>
+            <tr><td>US corn ethanol (2019 average, NG-fired)</td><td>45 g CO₂eq/MJ, LUC excluded</td><td>Lee et al. 2021, BioFPR</td></tr>
+            <tr><td>Ethanol to SAF; ATJ utilities; SAF distribution</td><td>1.01 MJ/MJ; 3.0 g/MJ; 0.6 g/MJ</td><td>R&amp;D GREET 2024; assumption</td></tr>
+            <tr><td>H₂: NG SMR / PEM wind / bagasse power</td><td>11.0 / 1.8 kg CO₂eq/kg; 15 g/kWh</td><td>Picciotto Maniscalco et al. 2024; assumption</td></tr>
+            <tr><td>H₂: ethanol reforming</td><td>65% LHV efficiency + 2 kWh/kg</td><td>assumption</td></tr>
+            <tr><td>ILUC</td><td>Cane BR 8.7; corn BR sequential 9.3; corn global 26.2; US 18.3</td><td>ICAO CORSIA default values, June 2025</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div><span class="flag">Screening use only</span> SAFra gives indicative values for research and pre-feasibility. It does not replace a certified CORSIA, RED III or RenovaBio calculation.</div>
+    <div>SAFra v0.1 · Department of Engineering, Federal University of Lavras (UFLA), Brazil · with UFABC and University of Zaragoza.</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+const LHV=26.8, RHO=0.789;
+const E_CANE=86*RHO*LHV/1000;                       // GJ EtOH / t cane
+const AL_CANE=LHV/(LHV+1.2*3.6);
+const E_CORN=430*RHO*LHV/1000;
+const AL_CORN=E_CORN/(E_CORN+0.363*18+0.013*37);
+const ETH_SAF=1.01, ATJ=3.0, DIST=0.6, CANE_CHEM=23.7*1000/(RHO*LHV*1000);
+const DATA={
+ cane:{name:'Sugarcane',def:'BR',rows:{
+  BR:[11.99,14.15,5.01,9.93,0.95,5.66],SP:[11.20,14.50,5.07,10.07,0.63,6.07],GO:[10.38,13.29,3.80,9.36,0.54,-3.22],
+  MG:[13.77,13.54,5.32,10.31,0.69,2.34],MS:[15.56,14.17,6.33,9.56,0.23,6.53],AL:[14.65,11.45,4.47,8.67,10.03,2.79],PB:[17.09,14.97,3.82,9.65,8.06,-2.26]},iluc:8.7},
+ corn2:{name:'Corn, 2nd crop',def:'BR',rows:{
+  BR:[68.85,127.67,46.25,12.46,0,276.86],MT:[65.29,123.05,45.25,11.69,0,757.59],PR:[88.38,152.90,49.60,14.85,0,212.55],
+  GO:[64.56,112.88,43.46,13.76,0,215.20],MS:[77.60,144.61,51.82,13.72,0,206.15],MG:[33.62,77.98,36.93,4.50,0,294.55],
+  SP:[62.45,111.71,43.95,11.45,0,274.55],TO:[57.02,88.62,37.44,7.41,0,1028.89],MA:[96.90,143.28,47.98,9.67,0,1973.81]},iluc:9.3},
+ corn1:{name:'Corn, 1st crop',def:'BR',rows:{
+  BR:[101.81,156.70,41.89,11.34,0,245.42],PR:[86.40,154.66,37.48,8.83,0,125.95],RS:[102.24,139.76,38.55,13.41,0,268.60],
+  GO:[94.53,160.81,43.32,12.34,0,158.33],MG:[104.67,158.09,40.60,11.05,0,180.00],PI:[105.28,169.04,48.35,8.45,0,333.78],
+  BA:[115.95,189.90,55.13,11.00,0,300.00],MA:[136.58,176.95,51.30,15.22,0,1381.67]},iluc:26.2}
+};
+const STATE_NAMES={BR:'Brazil (weighted)',SP:'São Paulo',GO:'Goiás',MG:'Minas Gerais',MS:'Mato Grosso do Sul',AL:'Alagoas',PB:'Paraíba',MT:'Mato Grosso',PR:'Paraná',TO:'Tocantins',MA:'Maranhão',RS:'Rio Grande do Sul',PI:'Piauí',BA:'Bahia'};
+const STAGES=[
+ ['n2o','Field N₂O','--a1'],['co2','Field CO₂ (lime, urea)','--a2'],['inp','Production of agricultural inputs','--a3'],
+ ['fuel','Diesel in field operations','--a4'],['burn','Straw burning','--a5'],['eth','Ethanol (aggregate)','--eth'],['tr','Feedstock transport','--tr'],
+ ['util','Ethanol plant utilities','--p1'],['chem','Ethanol plant chemicals and enzymes','--p2'],
+ ['atj','ATJ conversion utilities','--atj'],['h2','Hydrogen','--h2'],['dist','SAF transport and distribution','--dist']];
+const DEFAULTS={feed:'cane',state:'BR',plant:'B',h2:'pem',grid:79,h2d:0.5,kwh:55,luc:'none',custom:30};
+let S={...DEFAULTS}; let pins=[];
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function h2ef(st, ethCI){
+  const g=st.grid/1000;
+  switch(st.h2){
+    case 'smr': return 11.0;
+    case 'pem': return st.kwh*g+0.5;
+    case 'pembag': return st.kwh*0.015+0.5;
+    case 'pemwind': return 1.8;
+    case 'etsr': return (120/0.65)*ethCI/1000 + 2*g;
+  }
+}
+function compute(st){
+  const o={stages:{},luc:0,lucNote:'',ethCI:0};
+  let ethStages={}, al=1;
+  if(st.feed==='cane'||st.feed==='corn1'||st.feed==='corn2'){
+    const d=DATA[st.feed], r=d.rows[st.state]||d.rows[d.def];
+    const cane=st.feed==='cane', E=cane?E_CANE:E_CORN; al=cane?AL_CANE:AL_CORN;
+    ethStages={inp:r[0]/E,n2o:r[1]/E,co2:r[2]/E,fuel:r[3]/E,burn:r[4]/E};
+    if(cane){ethStages.tr=0;ethStages.util=0.3;ethStages.chem=CANE_CHEM;}
+    else{ethStages.tr=st.plant==='A'?0.5:2.0;ethStages.util=st.plant==='A'?4.6:0.3;ethStages.chem=3.1;}
+    o.ethCI=Object.values(ethStages).reduce((a,b)=>a+b,0)*al;
+    if(st.luc==='iluc'){o.luc=d.iluc;o.lucNote='CORSIA ILUC';}
+    else if(st.luc==='dluc'){o.luc=r[5]/E*al*ETH_SAF;o.lucNote='dLUC, BRLUC';}
+    else if(st.luc==='cons'){ if(st.feed==='corn2'){o.luc=-4.7*ETH_SAF;o.lucNote='consequential';} else {o.luc=0;o.lucNote='consequential value only available for 2nd-crop corn';}}
+  } else {
+    const ci = st.feed==='us'?45:Number(st.custom)||0;
+    ethStages={eth:ci}; o.ethCI=ci; al=1;
+    if(st.luc==='iluc'&&st.feed==='us'){o.luc=18.3;o.lucNote='CORSIA ILUC (US)';}
+    else if(st.luc!=='none'){o.luc=0;o.lucNote='not available for this feedstock';}
+  }
+  for(const [k,v] of Object.entries(ethStages)) o.stages[k]=v*(st.feed==='us'||st.feed==='custom'?1:al)*ETH_SAF;
+  o.stages.atj=ATJ; o.stages.h2=st.h2d/1000*h2ef(st,o.ethCI)*1000; o.stages.dist=DIST;
+  o.core=Object.values(o.stages).reduce((a,b)=>a+b,0); o.total=o.core+o.luc;
+  return o;
+}
+function label(st){
+  const f={cane:'Cane',corn2:'Corn 2nd',corn1:'Corn 1st',us:'US corn',custom:'Custom'}[st.feed];
+  const s=(st.feed==='us'||st.feed==='custom')?'':' '+st.state;
+  const p=(st.feed==='corn1'||st.feed==='corn2')?(st.plant==='A'?' · stand-alone':' · integrated'):'';
+  const h={pem:'PEM grid',pembag:'PEM bagasse',pemwind:'PEM wind',etsr:'EtOH reforming',smr:'NG SMR'}[st.h2];
+  return f+s+p+' · '+h;
+}
+const fmt=(v,d=1)=>(Math.round(v*10**d)/10**d).toFixed(d);
+
+function syncControls(){
+  document.querySelectorAll('#feed button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.feed));
+  document.querySelectorAll('#plant button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.plant));
+  const isCrop=S.feed in DATA;
+  $('stateBox').hidden=!isCrop; $('customBox').hidden=S.feed!=='custom';
+  $('plantBox').hidden=!(S.feed==='corn1'||S.feed==='corn2');
+  if(isCrop){
+    const rows=DATA[S.feed].rows; if(!rows[S.state]) S.state='BR';
+    $('state').innerHTML=Object.keys(rows).map(k=>`<option value="${k}" ${k===S.state?'selected':''}>${STATE_NAMES[k]}</option>`).join('');
+    $('stateHint').textContent=S.feed==='cane'?'Primary data from RenovaBio-certified mills, 2019–2021.':'ProspecSoy inventories, 2017–2019.';
+  }
+  [...$('h2').options].forEach(o=>{ if(o.value==='pembag') o.disabled=!(S.feed==='cane'||((S.feed==='corn1'||S.feed==='corn2')&&S.plant==='B')); });
+  if($('h2').selectedOptions[0]?.disabled && S.h2==='pembag') S.h2='pem';
+  $('h2').value=S.h2; $('gridBox').hidden=!(S.h2==='pem'||S.h2==='etsr');
+  $('grid').value=S.grid; $('gridO').textContent=S.grid+' g/kWh';
+  $('h2d').value=S.h2d; $('h2dO').textContent=Number(S.h2d).toFixed(2)+' g/MJ';
+  $('kwh').value=S.kwh; $('kwhO').textContent=S.kwh+' kWh/kg';
+  $('luc').value=S.luc; $('customCI').value=S.custom;
+}
+
+function render(){
+  syncControls();
+  const r=compute(S);
+  $('ci').textContent=fmt(r.total);
+  $('ciDesc').textContent=label(S)+(r.luc? ` · incl. ${fmt(r.luc)} g/MJ LUC (${r.lucNote})`:'')+'.';
+  $('lucHint').textContent=r.lucNote&&!r.luc?('Note: '+r.lucNote+'.'):'';
+  const sc=(1-r.total/89)*100, sr=(1-r.total/94)*100;
+  $('savC').textContent=fmt(sc,0)+'%'; $('savR').textContent=fmt(sr,0)+'%';
+  const chips=[
+    [sc>=10,'CORSIA eligible (≥10%)'],
+    [sr>=65,'RED III new plants (≥65%)'],
+    [sr>=70,'RED III RFNBO-level (≥70%)'],
+  ];
+  $('chips').innerHTML=chips.map(([ok,t])=>`<span class="chip ${ok?'ok':'no'}">${ok?'✓':'✗'} ${t}</span>`).join('');
+  const st=Object.entries(r.stages).filter(([k,v])=>Math.abs(v)>1e-6);
+  const top=st.slice().sort((a,b)=>b[1]-a[1])[0];
+  const name=k=>STAGES.find(s=>s[0]===k)[1];
+  $('hot').textContent=name(top[0]); $('hotV').textContent=`${fmt(top[1])} g/MJ · ${fmt(top[1]/r.core*100,0)}% of the LUC-free total`;
+  const ag=['n2o','co2','inp','fuel','burn'].reduce((a,k)=>a+(r.stages[k]||0),0);
+  $('agri').textContent=(S.feed in DATA)?fmt(ag/r.core*100,0)+'%':'n/a';
+  drawStack(r); drawTable(r); drawBench(r); drawH2(r); drawStates();
+}
+
+function drawStack(r){
+  const W=800,H=70, max=Math.max(40,r.core+Math.max(0,r.luc))*1.05, sx=v=>v/max*(W-10);
+  let x=5, s='';
+  STAGES.forEach(([k,n,c])=>{const v=r.stages[k]; if(!v) return; const w=sx(v);
+    s+=`<rect class="bar" x="${x}" y="8" width="${w}" height="34" fill="var(${c})"><title>${n}: ${fmt(v,2)} g/MJ</title></rect>`;
+    if(w>38) s+=`<text x="${x+w/2}" y="30" text-anchor="middle" font-size="11" style="fill:${['--a1','--a2','--atj','--h2','--p1','--a5','--tr','--eth'].includes(c)?'#fff':'#15241b'}">${fmt(v/r.core*100,0)}%</text>`;
+    x+=w;});
+  if(r.luc>0){const w=sx(r.luc); s+=`<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--soft)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--muted)" stroke-width="2"/></pattern></defs><rect x="${x}" y="8" width="${w}" height="34" fill="url(#hatch)"><title>LUC ${fmt(r.luc,2)}</title></rect>`; x+=w;}
+  [0,10,20,30,40,50,60,70,80].filter(t=>t<=max).forEach(t=>{s+=`<line x1="${5+sx(t)}" x2="${5+sx(t)}" y1="44" y2="48" stroke="var(--muted)"/><text class="mut" x="${5+sx(t)}" y="60" font-size="10" text-anchor="middle">${t}</text>`});
+  $('stack').innerHTML=s;
+  $('legend').innerHTML=STAGES.filter(([k])=>r.stages[k]).map(([k,n,c])=>`<span><i style="background:var(${c})"></i>${n}</span>`).join('')+(r.luc>0?'<span><i style="background:var(--muted);opacity:.5"></i>Land-use change</span>':'');
+}
+function drawTable(r){
+  const rows=STAGES.filter(([k])=>r.stages[k]).map(([k,n])=>[n,r.stages[k]]).sort((a,b)=>b[1]-a[1]);
+  if(r.luc) rows.push(['Land-use change ('+r.lucNote+')',r.luc]);
+  $('stageTbl').querySelector('tbody').innerHTML=rows.map(([n,v])=>`<tr><td>${n}</td><td class="n">${fmt(v,2)}</td><td class="n">${fmt(v/r.core*100,0)}%</td></tr>`).join('')+
+   `<tr><td><b>Total</b></td><td class="n"><b>${fmt(r.total,2)}</b></td><td class="n"></td></tr>`;
+}
+const BENCH=[
+ ['CORSIA default – BR cane ATJ, integrated',24.1,8.7,'corsia'],
+ ['CORSIA default – US corn ethanol ATJ',54.1,18.3,'corsia'],
+ ['CORSIA default – global corn ethanol ATJ',54.1,26.2,'corsia'],
+ ['R&D GREET 2024 – US corn ATJ',61.4,0,'lit'],
+ ['de Jong et al. 2017 – US corn ATJ',54.0,0,'lit'],
+ ['de Jong et al. 2017 – sugarcane ATJ',31.0,0,'lit'],
+ ['Klein et al. 2018 – cane ATJ, electrolysis',25.0,0,'lit']];
+function drawBench(r){
+  const items=[['Your scenario: '+label(S),r.core,r.luc,'you'],...pins.map(p=>[p.label,p.core,p.luc,'pin']),...BENCH];
+  const W=900,rowH=26,top=10,left=300,H=top+items.length*rowH+34, max=100, sx=v=>left+v/max*(W-left-40);
+  let s=`<defs><pattern id="h2p" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--panel)" stroke-width="2.2"/></pattern></defs>`;
+  [[89,'fossil 89','var(--ink)','start'],[80.1,'CORSIA −10%','var(--muted)','end'],[32.9,'RED III −65%','var(--bad)','middle']].forEach(([v,t,c,an])=>{
+    s+=`<line x1="${sx(v)}" x2="${sx(v)}" y1="${top-4}" y2="${H-30}" stroke="${c}" stroke-dasharray="${v===89?'':'3 3'}"/><text x="${sx(v)+(an==='start'?3:an==='end'?-3:0)}" y="${H-18}" font-size="11" text-anchor="${an}" style="fill:${c}">${t}</text>`;});
+  items.forEach(([n,c,l,k],i)=>{const y=top+i*rowH; const col=k==='you'?'var(--cane)':k==='pin'?'var(--corn)':k==='corsia'?'var(--grey)':'var(--jet)';
+    s+=`<text x="${left-8}" y="${y+15}" font-size="12" text-anchor="end" ${k==='you'?'font-weight="600"':''}>${n.length>48?n.slice(0,47)+'…':n}</text>`;
+    s+=`<rect x="${sx(0)}" y="${y+4}" width="${Math.max(0,sx(c)-sx(0))}" height="16" fill="${col}"/>`;
+    if(l>0){s+=`<rect x="${sx(c)}" y="${y+4}" width="${sx(c+l)-sx(c)}" height="16" fill="${col}" opacity=".45"/><rect x="${sx(c)}" y="${y+4}" width="${sx(c+l)-sx(c)}" height="16" fill="url(#h2p)"/>`;}
+    s+=`<text x="${sx(Math.max(c+l,c))+4}" y="${y+16}" font-size="11.5" font-family="IBM Plex Mono, monospace">${fmt(c+l)}</text>`;});
+  [0,20,40,60,80,100].forEach(t=>s+=`<text class="mut" x="${sx(t)}" y="${H-4}" font-size="11" text-anchor="middle">${t}</text>`);
+  $('bench').setAttribute('viewBox',`0 0 ${W} ${H}`); $('bench').innerHTML=s;
+  $('pins').innerHTML=pins.map((p,i)=>`<span class="pin">${p.label} · <b>${fmt(p.core+p.luc)}</b><button aria-label="Remove pinned scenario" data-i="${i}">×</button></span>`).join('');
+  $('pins').querySelectorAll('button').forEach(b=>b.onclick=()=>{pins.splice(+b.dataset.i,1);render();});
+}
+function drawH2(r){
+  const W=420,H=300,L=46,B=36,T=12,R=12, gx=v=>L+v/300*(W-L-R), gy=v=>H-B-v/14*(H-B-T);
+  const etsr=(120/0.65)*r.ethCI/1000; // + small elec, shown at current grid
+  let s='';
+  [0,2,4,6,8,10,12,14].forEach(t=>s+=`<line x1="${L}" x2="${W-R}" y1="${gy(t)}" y2="${gy(t)}" stroke="var(--line)"/><text class="mut" x="${L-6}" y="${gy(t)+3}" font-size="9.5" text-anchor="end">${t}</text>`);
+  [0,50,100,150,200,250,300].forEach(t=>s+=`<text class="mut" x="${gx(t)}" y="${H-B+14}" font-size="9.5" text-anchor="middle">${t}</text>`);
+  s+=`<text class="mut" x="${(L+W)/2}" y="${H-6}" font-size="10" text-anchor="middle">grid emission factor (g CO₂eq/kWh)</text>`;
+  s+=`<text class="mut" transform="translate(12 ${H/2}) rotate(-90)" font-size="10" text-anchor="middle">kg CO₂eq / kg H₂</text>`;
+  s+=`<rect x="${L}" y="${gy(11.2)}" width="${W-L-R}" height="${gy(9.35)-gy(11.2)}" fill="var(--grey)" opacity=".28"/><text x="${W-R-4}" y="${gy(10.3)+3}" font-size="10" text-anchor="end">NG SMR</text>`;
+  const e0=etsr, e1=etsr+2*0.3; s+=`<line x1="${gx(0)}" y1="${gy(e0)}" x2="${gx(300)}" y2="${gy(e1)}" stroke="var(--cane)" stroke-width="2" stroke-dasharray="5 3"/><text x="${W-R-4}" y="${gy(e1)-6}" font-size="10" text-anchor="end" style="fill:var(--cane)">ethanol reforming</text>`;
+  const p0=0.5, p1=S.kwh*0.3+0.5; const yEnd=Math.min(p1,14), xEnd=p1>14?(14-0.5)/S.kwh*1000:300;
+  s+=`<line x1="${gx(0)}" y1="${gy(p0)}" x2="${gx(xEnd)}" y2="${gy(yEnd)}" stroke="var(--jet)" stroke-width="2.4"/><text x="${gx(xEnd)-4}" y="${gy(yEnd)+14}" font-size="10" text-anchor="end" style="fill:var(--jet)">PEM</text>`;
+  const be=(etsr-0.5)/(S.kwh/1000-0.002);
+  if(be>0&&be<300){s+=`<circle cx="${gx(be)}" cy="${gy(S.kwh*be/1000+0.5)}" r="4" fill="var(--ink)"/><text x="${gx(be)+6}" y="${gy(S.kwh*be/1000+0.5)-6}" font-size="10">break-even ≈ ${fmt(be,0)} g/kWh</text>`;}
+  if(S.grid<=300){s+=`<line x1="${gx(S.grid)}" x2="${gx(S.grid)}" y1="${T}" y2="${H-B}" stroke="var(--bad)" stroke-dasharray="3 3"/><text x="${gx(S.grid)+4}" y="${T+10}" font-size="10" style="fill:var(--bad)">your grid ${S.grid}</text>`;}
+  $('h2chart').innerHTML=s;
+  const pem=S.kwh*S.grid/1000+0.5, et=etsr+2*S.grid/1000;
+  $('h2note').textContent=`At ${S.grid} g/kWh: PEM ${fmt(pem)} kg CO₂eq/kg H₂, ethanol reforming ${fmt(et)} (using this scenario’s ethanol, ${fmt(r.ethCI)} g/MJ), NG SMR 11.0. Ethanol reforming diverts about ${fmt(S.h2d*120/0.65/10,1)}% of the ethanol from SAF to hydrogen.`;
+}
+function drawStates(){
+  const thead=$('stateTbl').querySelector('thead'), tb=$('stateTbl').querySelector('tbody');
+  const feeds=['cane','corn2','corn1'];
+  thead.innerHTML='<tr><th>State</th>'+feeds.map(f=>`<th class="n">${DATA[f].name}</th>`).join('')+'</tr>';
+  const states=[...new Set(feeds.flatMap(f=>Object.keys(DATA[f].rows)))];
+  tb.innerHTML=states.map(st=>'<tr><td>'+STATE_NAMES[st]+'</td>'+feeds.map(f=>{
+    if(!DATA[f].rows[st]) return '<td class="n" style="color:var(--muted)">–</td>';
+    const r=compute({...S,feed:f,state:st}); const on=S.feed===f&&S.state===st;
+    return `<td class="n" style="${on?'font-weight:700;color:var(--cane)':''}">${fmt(r.total)}</td>`;}).join('')+'</tr>').join('');
+}
+
+// events
+document.querySelectorAll('#feed button').forEach(b=>b.onclick=()=>{S.feed=b.dataset.v; if(S.feed==='cane') S.plant='B'; render();});
+document.querySelectorAll('#plant button').forEach(b=>b.onclick=()=>{S.plant=b.dataset.v; render();});
+$('state').onchange=e=>{S.state=e.target.value;render();};
+$('h2').onchange=e=>{S.h2=e.target.value;render();};
+$('grid').oninput=e=>{S.grid=+e.target.value;render();};
+$('h2d').oninput=e=>{S.h2d=+e.target.value;render();};
+$('kwh').oninput=e=>{S.kwh=+e.target.value;render();};
+$('luc').onchange=e=>{S.luc=e.target.value;render();};
+$('customCI').oninput=e=>{S.custom=e.target.value;render();};
+$('pinBtn').onclick=()=>{ if(pins.length>=4) pins.shift(); const r=compute(S); pins.push({label:label(S),core:r.core,luc:r.luc}); render();};
+$('resetBtn').onclick=()=>{S={...DEFAULTS};pins=[];render();};
+$('copyBtn').onclick=()=>{
+  const r=compute(S); const lines=['SAFra v0.1 results','Scenario,'+label(S),'LUC,'+(r.lucNote||'excluded'),'Stage,g CO2eq/MJ SAF'];
+  STAGES.forEach(([k,n])=>{if(r.stages[k]) lines.push(n.replace(/,/g,'')+','+fmt(r.stages[k],3));});
+  if(r.luc) lines.push('Land-use change,'+fmt(r.luc,3)); lines.push('Total,'+fmt(r.total,3));
+  lines.push('Saving vs CORSIA 89,'+fmt((1-r.total/89)*100,1)+'%');
+  const txt=lines.join('\n');
+  navigator.clipboard?.writeText(txt).then(()=>{$('copyMsg').textContent='Results copied as CSV text.';},()=>{$('copyMsg').textContent='Copy is blocked here. Select the stage table and copy it manually.';});
+};
+// demo pins so the comparison opens populated
+const demo=[{...DEFAULTS,feed:'corn2',plant:'B'},{...DEFAULTS,feed:'us',h2:'smr'}];
+demo.forEach(d=>{const r=compute(d); pins.push({label:label(d),core:r.core,luc:r.luc});});
+render();
+})();
+</script>
+
+</body>
+</html>

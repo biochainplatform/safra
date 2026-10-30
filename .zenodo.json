@@ -1,0 +1,15 @@
+{
+  "title": "SAFra: life-cycle carbon calculator for Alcohol-to-Jet SAF from Brazilian ethanol",
+  "upload_type": "software",
+  "description": "SAFra is a browser-based screening tool that estimates the well-to-wake carbon intensity of Alcohol-to-Jet (ATJ) sustainable aviation fuel from Brazilian sugarcane and corn ethanol. It combines state-level agricultural inventories (Pereira et al. 2025), stand-alone and integrated cane-corn mill configurations, five hydrogen supply routes and three land-use change accounting methods, and benchmarks results against CORSIA default values, US corn pathways and published ATJ life cycle assessments. Screening use only; not a substitute for certified CORSIA, RED III or RenovaBio calculations.",
+  "creators": [
+    {
+      "name": "Ensinas, Adriano Viana",
+      "affiliation": "Department of Engineering, Federal University of Lavras (UFLA), Brazil"
+    }
+  ],
+  "keywords": ["sustainable aviation fuel", "alcohol-to-jet", "life cycle assessment", "ethanol", "Brazil", "CORSIA", "decision support tool"],
+  "license": "MIT",
+  "language": "eng",
+  "version": "0.1.0"
+}

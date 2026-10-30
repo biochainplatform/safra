@@ -1,0 +1,8 @@
+pathway,core_gCO2e_MJ,ILUC_gCO2e_MJ,source
+"CORSIA default - BR sugarcane ATJ (ethanol, integrated)",24.1,8.7,ICAO 2025
+CORSIA default - US corn ethanol ATJ (standalone),54.1,18.3,ICAO 2025
+CORSIA default - global corn ethanol ATJ (standalone),54.1,26.2,ICAO 2025
+R&D GREET 2024 - US corn ATJ,61.4,0,Wang et al. 2025
+de Jong et al. 2017 - US corn ATJ (energy allocation),54.0,0,de Jong et al. 2017
+de Jong et al. 2017 - sugarcane ATJ (energy allocation),31.0,0,de Jong et al. 2017
+"Klein et al. 2018 - cane ATJ with electrolysis (max., economic allocation)",25.0,0,Klein et al. 2018

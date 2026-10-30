@@ -1,0 +1,37 @@
+parameter,value,unit,source
+cane_ethanol_yield,86,L/t cane,Silva et al. 2014
+cane_surplus_electricity,1.2,kWh/kg ethanol,Silva et al. 2014
+cane_mill_chemicals,23.7,kg CO2e/m3 ethanol,Macedo et al. 2008
+cane_mill_utilities,0.3,g CO2e/MJ ethanol,assumption (bagasse boiler CH4/N2O)
+corn_ethanol_yield,430,L/t corn,Moreira et al. 2020
+corn_DDGS,363,kg/t corn,Moreira et al. 2020
+corn_oil,13,kg/t corn,Moreira et al. 2020
+DDGS_LHV,18.0,MJ/kg,assumption
+corn_oil_LHV,37.0,MJ/kg,assumption
+corn_utilities_standalone,4.6,g CO2e/MJ ethanol,derived from Moreira et al. 2020 (eucalyptus CHP)
+corn_utilities_integrated,0.3,g CO2e/MJ ethanol,assumption (bagasse)
+corn_chemicals_enzymes,3.1,g CO2e/MJ ethanol,derived from Moreira et al. 2020
+corn_transport_standalone,0.5,g CO2e/MJ ethanol,"~50 km, Moreira et al. 2020"
+corn_transport_integrated,2.0,g CO2e/MJ ethanol,"~200 km, Donke et al. 2017"
+ethanol_LHV,26.8,MJ/kg,
+ethanol_density,0.789,kg/L,
+ethanol_to_SAF,1.01,MJ ethanol/MJ SAF,R&D GREET 2024
+ATJ_utilities,3.0,g CO2e/MJ SAF,assumption
+SAF_distribution,0.6,g CO2e/MJ SAF,R&D GREET 2024
+H2_demand,0.5,g H2/MJ SAF,range 0.3-0.7; de Jong et al. 2017
+H2_SMR,11.0,kg CO2e/kg H2,Picciotto Maniscalco et al. 2024
+PEM_electricity,55,kWh/kg H2,assumption; Klein et al. 2018 uses 62.1
+PEM_infrastructure,0.5,kg CO2e/kg H2,assumption
+PEM_wind,1.8,kg CO2e/kg H2,Picciotto Maniscalco et al. 2024
+bagasse_power_EF,15,g CO2e/kWh,assumption
+grid_EF_SE_CO_2030_2049,79,g CO2e/kWh,ONS hourly data 2015-2025 + PDE 2034 projection
+ethanol_reforming_efficiency,0.65,LHV basis,assumption
+ethanol_reforming_electricity,2.0,kWh/kg H2,assumption
+US_corn_ethanol_CI,45,g CO2e/MJ ethanol,"Lee et al. 2021 (2019, LUC excluded)"
+ILUC_cane_BR,8.7,g CO2e/MJ,ICAO CORSIA 2025
+ILUC_corn_BR_sequential,9.3,g CO2e/MJ,ICAO CORSIA 2025 (provisional)
+ILUC_corn_global,26.2,g CO2e/MJ,ICAO CORSIA 2025
+ILUC_corn_US,18.3,g CO2e/MJ,ICAO CORSIA 2025
+consequential_LUC_corn2,-4.7,g CO2e/MJ ethanol,Moreira et al. 2020
+fossil_jet_CORSIA,89,g CO2e/MJ,ICAO CORSIA
+fossil_comparator_RED_III,94,g CO2e/MJ,Directive (EU) 2023/2413

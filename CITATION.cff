@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use SAFra, please cite it as below."
+title: "SAFra: life-cycle carbon calculator for Alcohol-to-Jet SAF from Brazilian ethanol"
+type: software
+version: 0.1.0
+date-released: 2026-11-01
+license: MIT
+repository-code: "https://github.com/<your-github-user>/safra"
+url: "https://<your-github-user>.github.io/safra/"
+abstract: >-
+  SAFra is a browser-based screening tool that estimates the well-to-wake
+  carbon intensity of Alcohol-to-Jet sustainable aviation fuel from Brazilian
+  sugarcane and corn ethanol, using state-level agricultural inventories,
+  alternative plant configurations, hydrogen supply routes and land-use change
+  accounting methods, and benchmarks the results against CORSIA default values,
+  US corn pathways and published life cycle assessments.
+keywords:
+  - sustainable aviation fuel
+  - alcohol-to-jet
+  - life cycle assessment
+  - ethanol
+  - Brazil
+  - CORSIA
+authors:
+  - family-names: Ensinas
+    given-names: Adriano Viana
+    email: adriano.ensinas@ufla.br
+    affiliation: "Department of Engineering, Federal University of Lavras (UFLA), Brazil"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
