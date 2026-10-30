@@ -5,8 +5,8 @@ type: software
 version: 0.1.0
 date-released: 2026-11-01
 license: MIT
-repository-code: "https://github.com/<your-github-user>/safra"
-url: "https://<your-github-user>.github.io/safra/"
+repository-code: "https://github.com/biochainplatform/safra"
+url: "https://biochainplatform.github.io/safra/"
 abstract: >-
   SAFra is a browser-based screening tool that estimates the well-to-wake
   carbon intensity of Alcohol-to-Jet sustainable aviation fuel from Brazilian

@@ -2,7 +2,7 @@
 
 **SAFra** (*SAF* + *safra*, Portuguese for "harvest") is a free, browser-based tool that estimates the well-to-wake carbon intensity (CI) of Alcohol-to-Jet (ATJ) sustainable aviation fuel produced from Brazilian sugarcane and corn ethanol, and compares it with US corn pathways, CORSIA default values and published ATJ life cycle assessments.
 
-**Live tool:** `https://<your-github-user>.github.io/safra/` *(update after enabling GitHub Pages)*
+**Live tool:** `https://biochainplatform.github.io/safra/` *(update after enabling GitHub Pages)*
 
 ![SAFra main screen](docs/img/screenshot-main.png)
 
@@ -43,7 +43,7 @@ SAFra is a single static HTML file with no build step and no server code.
 
 1. Create a public repository named `safra` and upload the contents of this folder (keep `.nojekyll`).
 2. Go to **Settings → Pages**, choose **Deploy from a branch**, branch `main`, folder `/ (root)`, and save.
-3. After about a minute the tool is live at `https://<your-github-user>.github.io/safra/`.
+3. After about a minute the tool is live at `https://biochainplatform.github.io/safra/`.
 4. Optional: add a custom domain (e.g. `safra.example.org`) in the same Pages settings.
 
 ## Archive and cite (Zenodo DOI)
